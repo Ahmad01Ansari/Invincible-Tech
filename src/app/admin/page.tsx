@@ -9,9 +9,11 @@ import {
   ArrowRight,
   TrendingUp,
   Shield,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { getBlogs } from "../actions/blog";
+import { getSubmissions } from "../actions/contact";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -31,6 +33,9 @@ export default async function AdminDashboardPage() {
   const totalBlogs = blogs.length;
   const publishedBlogs = blogs.filter((b: any) => b.status === "published").length;
 
+  const { data: contacts = [] } = await getSubmissions();
+  const newInquiries = contacts.filter((c: any) => c.status === "new").length;
+
   const adminModules = [
     {
       title: "Blog Operations",
@@ -42,20 +47,20 @@ export default async function AdminDashboardPage() {
       borderColor: "hover:border-accent-orange",
     },
     {
+      title: "Inquiry Feed",
+      description: "Monitor and respond to high-priority architectural consultations.",
+      icon: <Mail size={20} />,
+      href: "/admin/contact",
+      stats: `${newInquiries} NEW`,
+      color: "text-accent-neon",
+      borderColor: "hover:border-accent-neon",
+    },
+    {
       title: "Portfolio Assets",
       description: "Curate and update engineering case studies and project showcase.",
       icon: <LayoutDashboard size={20} />,
       href: "#",
       stats: "Upcoming",
-      color: "text-accent-neon",
-      borderColor: "hover:border-accent-neon",
-    },
-    {
-      title: "Access Control",
-      description: "Manage administrative roles and identity verification protocols.",
-      icon: <Users size={20} />,
-      href: "#",
-      stats: "Restricted",
       color: "text-blue-400",
       borderColor: "hover:border-blue-400",
     },

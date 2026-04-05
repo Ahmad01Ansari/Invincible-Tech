@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,8 +12,11 @@ import { CheckCircle2, Loader2, ChevronDown } from "lucide-react";
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
   company: z.string().optional(),
+  country: z.string().optional(),
   service: z.string().min(1, "Please select an engineering pillar"),
+  budget: z.string().min(1, "Please select a budget range"),
   message: z.string().min(10, "Briefly describe your objectives"),
   honeypot: z.string().max(0, "Bot detected").optional(), 
 });
@@ -21,55 +25,89 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 
 export function ContactForm() {
   const { isSubmitting, setIsSubmitting } = useAppStore();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [sessionId, setSessionId] = useState("");
   
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
   });
 
+  // Generate session ID only on client to avoid hydration mismatch
+  useEffect(() => {
+    if (isSuccess && !sessionId) {
+      setSessionId(Math.random().toString(36).substring(7).toUpperCase());
+    }
+  }, [isSuccess, sessionId]);
+
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    
-    // Simulate a high-fidelity "Engineering Console" feedback loop
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          sourcePage: typeof window !== "undefined" ? window.location.pathname : "/",
+        }),
       });
 
-      if (!response.ok) throw new Error("Connection Failure");
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Connection Failure");
+      }
+
+      setIsSuccess(true);
+      reset();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Transmission error:", error);
+      alert(error.message || "Target acquisition failed. Please retry.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (isSubmitSuccessful) {
+  const handleNewTransmission = () => {
+    setSessionId("");
+    setIsSuccess(false);
+  };
+
+  if (isSuccess) {
     return (
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-12 text-center border-accent-neon border-dashed"
+        className="glass-card p-12 text-center border-accent-neon border-dashed relative overflow-hidden group"
       >
-        <div className="w-16 h-16 bg-accent-neon/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="text-accent-neon w-8 h-8" />
+        <div className="absolute inset-0 bg-accent-neon/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="w-20 h-20 bg-accent-neon/10 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+          <div className="absolute inset-0 bg-accent-neon/20 rounded-full animate-ping" />
+          <CheckCircle2 className="text-accent-neon w-10 h-10 relative z-10" />
         </div>
-        <h3 className="text-2xl font-display font-medium text-text-high mb-4 tracking-tight">Transmission Received.</h3>
-        <p className="text-text-low mb-8 font-mono text-sm leading-relaxed max-w-sm mx-auto">
-          Your architectural inquiry has been logged. An engineering lead will contact you within 24 hours to sync on objectives.
+        
+        <h3 className="text-3xl font-display font-medium text-text-high mb-4 tracking-tighter uppercase italic">
+          Transmission Successfully <span className="text-accent-neon">Deployed.</span>
+        </h3>
+        
+        <p className="text-text-low mb-10 font-mono text-sm leading-relaxed max-w-md mx-auto uppercase tracking-wider opacity-80">
+          Message sent to success. We appreciate your efforts, we will soon contact you.
+          Our engineering leads are syncing on your architectural requirements.
         </p>
-        <Button onClick={() => reset()} variant="outline" className="font-mono text-xs uppercase tracking-widest">
-          New Transmission
-        </Button>
+
+        <div className="flex flex-col gap-4 max-w-xs mx-auto">
+          <Button onClick={handleNewTransmission} variant="outline" className="font-mono text-[10px] uppercase tracking-[0.3em] h-12">
+            New Transmission Protocol
+          </Button>
+          <p className="text-[9px] font-mono text-text-low/40 uppercase tracking-widest">
+            SESSION_ID: {sessionId || "GENERATING..."}
+          </p>
+        </div>
       </motion.div>
     );
   }
@@ -124,6 +162,22 @@ export function ContactForm() {
           />
         </div>
 
+        <div className="flex flex-col gap-2">
+          <label htmlFor="phone" className="text-xs font-mono uppercase tracking-widest text-text-low mb-1 flex items-center gap-2">
+            <span className="w-1 h-1 bg-accent-orange rounded-full" />
+            Contact Number
+          </label>
+          <input
+            {...register("phone")}
+            id="phone"
+            type="tel"
+            className="w-full bg-obsidian/50 border border-border-dim/50 rounded-sm px-5 py-4 text-text-high font-mono text-sm focus:outline-none focus:border-accent-orange focus:bg-obsidian transition-all placeholder:text-text-low/30"
+            placeholder="+1 000 000 000"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="flex flex-col gap-2 relative">
           <label htmlFor="service" className="text-xs font-mono uppercase tracking-widest text-text-low mb-1 flex items-center gap-2">
             <span className="w-1 h-1 bg-accent-orange rounded-full" />
@@ -151,6 +205,41 @@ export function ContactForm() {
           </div>
           {errors.service && <span className="text-[10px] font-mono text-red-500 mt-1 uppercase tracking-tighter">{errors.service.message}</span>}
         </div>
+
+        <div className="flex flex-col gap-2 relative">
+          <label htmlFor="budget" className="text-xs font-mono uppercase tracking-widest text-text-low mb-1 flex items-center gap-2">
+            <span className="w-1 h-1 bg-accent-orange rounded-full" />
+            Capital Allocation
+          </label>
+          <select
+            {...register("budget")}
+            id="budget"
+            className="w-full bg-obsidian/50 border border-border-dim/50 rounded-sm px-5 py-4 text-text-high font-mono text-sm focus:outline-none focus:border-accent-orange focus:bg-obsidian transition-all appearance-none cursor-pointer"
+          >
+            <option value="" className="bg-obsidian">BUDGET_RANGE</option>
+            <option value="<10k" className="bg-obsidian">&lt; $10k (Pilot)</option>
+            <option value="10k-50k" className="bg-obsidian">$10k - $50k (Growth)</option>
+            <option value="50k-100k" className="bg-obsidian">$50k - $100k (Enterprise)</option>
+            <option value="100k+" className="bg-obsidian">$100k+ (Transformation)</option>
+          </select>
+          <div className="absolute right-5 bottom-4 pointer-events-none text-text-low">
+            <ChevronDown size={18} />
+          </div>
+          {errors.budget && <span className="text-[10px] font-mono text-red-500 mt-1 uppercase tracking-tighter">{errors.budget.message}</span>}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <label htmlFor="country" className="text-xs font-mono uppercase tracking-widest text-text-low mb-1 flex items-center gap-2">
+          <span className="w-1 h-1 bg-accent-orange rounded-full" />
+          Location / Timezone
+        </label>
+        <input
+          {...register("country")}
+          id="country"
+          className="w-full bg-obsidian/50 border border-border-dim/50 rounded-sm px-5 py-4 text-text-high font-mono text-sm focus:outline-none focus:border-accent-orange focus:bg-obsidian transition-all placeholder:text-text-low/30"
+          placeholder="e.g. USA, UK, India, Remote"
+        />
       </div>
 
       <div className="flex flex-col gap-2">
