@@ -1,26 +1,197 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================
+   INVINSIBLE TECH — DESIGN SYSTEM TOKENS
+   Phase 3 Color & Typography System
+   ============================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ── Backgrounds ── */
+  --color-obsidian: #050506;
+  --color-surface-100: #0E0E11;
+  --color-surface-200: #16161A;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* ── Borders ── */
+  --color-border-dim: #23232A;
+  --color-border-glow: #3A3A45;
+
+  /* ── Text ── */
+  --color-text-high: #F5F5FA;
+  --color-text-low: #8E9196;
+
+  /* ── Accents ── */
+  --color-accent-orange: #FF6B00;
+  --color-accent-orange-hover: #FF8533;
+  --color-accent-neon: #00E0FF;
+  --color-emerald-trace: #00FF85;
+
+  /* ── Fonts ── */
+  --font-display: var(--font-space-grotesk);
+  --font-body: var(--font-inter);
+
+  /* ── Font Sizes ── */
+  --text-display: 64px;
+  --text-h2: 48px;
+  --text-h3: 32px;
+  --text-body-lg: 18px;
+  --text-body-sm: 14px;
+
+  /* ── Spacing (8pt scale) ── */
+  --spacing-18: 72px;
+  --spacing-22: 88px;
+  --spacing-26: 104px;
+  --spacing-32: 128px;
+  --spacing-40: 160px;
+
+  /* ── Border Radius ── */
+  --radius-card: 16px;
+  --radius-button: 8px;
+  --radius-pill: 32px;
+
+  /* ── Max Widths ── */
+  --container-default: 1200px;
+  --container-narrow: 800px;
+  --font-mono: var(--font-geist-mono);
+  
+  /* ── Animations ── */
+  --animate-marquee: marquee 30s linear infinite;
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 2rem)); }
   }
 }
 
+/* ── CSS Custom Properties ── */
+:root {
+  --glass-bg: rgba(14, 14, 17, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-blur: 24px;
+  --section-gap: 128px;
+  --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Base Styles ── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #050506;
+  color: #F5F5FA;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: rgba(255, 107, 0, 0.3);
+  color: #F5F5FA;
+}
+
+/* ── Scrollbar (Dark themed) ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050506;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #23232A;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A3A45;
+}
+
+/* ============================================
+   COMPONENT UTILITIES
+   ============================================ */
+
+/* ── Glassmorphism Card ── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+}
+
+/* ── Glow Effects ── */
+.glow-orange {
+  box-shadow: 0 0 60px rgba(255, 107, 0, 0.15);
+}
+
+.glow-neon {
+  box-shadow: 0 0 60px rgba(0, 224, 255, 0.1);
+}
+
+/* ── Background Glow Orb ── */
+.bg-glow-radial {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 107, 0, 0.08),
+    rgba(0, 224, 255, 0.04),
+    transparent 70%
+  );
+}
+
+/* ── Section Spacing ── */
+.section-padding {
+  padding-top: var(--section-gap);
+  padding-bottom: var(--section-gap);
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+}
+
+/* ── Text Gradient ── */
+.text-gradient-orange {
+  background: linear-gradient(135deg, #FF6B00, #FF8533);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-neon {
+  background: linear-gradient(135deg, #00E0FF, #00FF85);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   TIPTAP RENDERER STYLES (PROSE OVERRIDES)
+   Ensures images and headings show up correctly in Tailwind 4
+   ============================================ */
+
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 2rem auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  color: var(--color-text-high) !important;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-display);
+}
+
+.prose ul, .prose ol {
+  list-style-position: outside;
+  margin-left: 1.5rem;
+  color: var(--color-text-low);
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
 }

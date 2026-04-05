@@ -1,0 +1,643 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .erp-root {
+    font-family: 'Inter', sans-serif;
+    background: #0a0c10;
+    color: #e2e8f0;
+    min-height: 600px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .scene-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(30,58,120,0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 70%, rgba(120,50,10,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(8,15,30,1) 40%, #050709 100%);
+    pointer-events: none;
+  }
+  .ambient-lines {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .grid-line {
+    position: absolute; background: rgba(59,130,246,0.06);
+  }
+  .office-layer {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+    background: linear-gradient(to top, rgba(10,15,25,0.9), transparent);
+    pointer-events: none;
+  }
+  .main-layout {
+    position: relative; z-index: 2;
+    display: flex; height: 600px;
+  }
+  /* SIDEBAR */
+  .sidebar {
+    width: 52px; background: rgba(8,12,22,0.92);
+    border-right: 1px solid rgba(59,130,246,0.15);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 0; gap: 4px;
+    backdrop-filter: blur(10px);
+  }
+  .sidebar-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px;
+    box-shadow: 0 0 12px rgba(249,115,22,0.5);
+  }
+  .nav-item {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px; color: rgba(148,163,184,0.7);
+    transition: all 0.2s; position: relative;
+  }
+  .nav-item.active {
+    background: rgba(59,130,246,0.2); color: #60a5fa;
+    box-shadow: 0 0 8px rgba(59,130,246,0.3);
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+  .nav-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 5px; height: 5px; border-radius: 50%; background: #f97316;
+  }
+  /* MAIN CONTENT */
+  .content {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .topbar {
+    height: 44px; background: rgba(8,12,22,0.88);
+    border-bottom: 1px solid rgba(59,130,246,0.12);
+    display: flex; align-items: center; padding: 0 14px; gap: 10px;
+    backdrop-filter: blur(8px);
+  }
+  .topbar-title { font-size: 12px; font-weight: 600; color: #f1f5f9; letter-spacing: 0.5px; }
+  .topbar-badge {
+    font-size: 9px; padding: 2px 7px; border-radius: 20px;
+    background: rgba(249,115,22,0.2); color: #fb923c;
+    border: 1px solid rgba(249,115,22,0.3);
+  }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .notif-btn {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #94a3b8; position: relative; cursor: pointer;
+  }
+  .notif-dot {
+    position: absolute; top: 5px; right: 5px;
+    width: 5px; height: 5px; border-radius: 50%; background: #f97316;
+  }
+  .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600; color: #fff;
+  }
+  .dash-body {
+    flex: 1; overflow: auto; padding: 10px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  /* KPI CARDS */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .kpi-card {
+    background: rgba(15,22,40,0.9);
+    border: 1px solid rgba(59,130,246,0.18);
+    border-radius: 9px; padding: 9px 11px;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(6px);
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .kpi-card.blue::before { background: linear-gradient(90deg, #3b82f6, transparent); }
+  .kpi-card.orange::before { background: linear-gradient(90deg, #f97316, transparent); }
+  .kpi-card.green::before { background: linear-gradient(90deg, #22c55e, transparent); }
+  .kpi-card.purple::before { background: linear-gradient(90deg, #a855f7, transparent); }
+  .kpi-icon {
+    font-size: 14px; width: 26px; height: 26px;
+    border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 6px;
+  }
+  .kpi-icon.blue { background: rgba(59,130,246,0.15); }
+  .kpi-icon.orange { background: rgba(249,115,22,0.15); }
+  .kpi-icon.green { background: rgba(34,197,94,0.15); }
+  .kpi-icon.purple { background: rgba(168,85,247,0.15); }
+  .kpi-label { font-size: 9px; color: #64748b; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
+  .kpi-value { font-size: 18px; font-weight: 700; color: #f1f5f9; line-height: 1.1; }
+  .kpi-change {
+    font-size: 9px; margin-top: 2px;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .kpi-change.up { color: #22c55e; }
+  .kpi-change.dn { color: #ef4444; }
+  /* MIDDLE ROW */
+  .mid-row { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 7px; flex: 1; min-height: 0; }
+  .panel {
+    background: rgba(15,22,40,0.9);
+    border: 1px solid rgba(59,130,246,0.15);
+    border-radius: 9px; overflow: hidden;
+    backdrop-filter: blur(6px);
+  }
+  .panel-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 11px; border-bottom: 1px solid rgba(59,130,246,0.1);
+  }
+  .panel-title { font-size: 10px; font-weight: 600; color: #cbd5e1; letter-spacing: 0.3px; }
+  .panel-tag {
+    font-size: 8px; padding: 1px 6px; border-radius: 10px;
+    background: rgba(59,130,246,0.12); color: #60a5fa;
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+  .panel-body { padding: 8px 11px; }
+  /* CHART */
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 5px; height: 80px;
+    padding: 0 0 4px;
+  }
+  .bar-group { flex: 1; display: flex; gap: 2px; align-items: flex-end; }
+  .bar {
+    flex: 1; border-radius: 3px 3px 0 0; min-width: 5px;
+    transition: opacity 0.2s;
+  }
+  .bar.b1 { background: #3b82f6; }
+  .bar.b2 { background: rgba(249,115,22,0.7); }
+  .chart-xlabels {
+    display: flex; gap: 5px; margin-top: 3px;
+  }
+  .chart-xlabel { flex: 1; font-size: 7px; color: #475569; text-align: center; }
+  /* TABLE */
+  .mini-table { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .mini-table th {
+    text-align: left; color: #475569; font-weight: 500;
+    padding: 3px 6px; border-bottom: 1px solid rgba(59,130,246,0.1);
+    font-size: 8px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .mini-table td {
+    padding: 4px 6px; color: #94a3b8;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .mini-table tr:last-child td { border-bottom: none; }
+  .status-pill {
+    display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 7px; font-weight: 600;
+  }
+  .status-pill.paid { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .status-pill.pend { background: rgba(249,115,22,0.15); color: #fb923c; }
+  .status-pill.due { background: rgba(239,68,68,0.15); color: #f87171; }
+  /* DONUT */
+  .donut-wrap { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+  .donut-labels { display: flex; flex-direction: column; gap: 5px; }
+  .donut-label-item { display: flex; align-items: center; gap: 5px; }
+  .donut-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .donut-ltext { font-size: 8px; color: #94a3b8; }
+  .donut-lval { font-size: 9px; font-weight: 600; color: #e2e8f0; margin-left: 2px; }
+  /* BOTTOM ROW */
+  .bot-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+  /* NOTIFICATIONS */
+  .notif-list { display: flex; flex-direction: column; gap: 5px; }
+  .notif-item {
+    display: flex; gap: 7px; align-items: flex-start;
+    padding: 5px 7px; border-radius: 7px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .notif-ico {
+    width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 9px;
+  }
+  .notif-ico.warn { background: rgba(249,115,22,0.2); }
+  .notif-ico.info { background: rgba(59,130,246,0.2); }
+  .notif-ico.ok { background: rgba(34,197,94,0.2); }
+  .notif-text { font-size: 8px; color: #94a3b8; line-height: 1.4; }
+  .notif-text b { color: #cbd5e1; font-weight: 500; }
+  .notif-time { font-size: 7px; color: #475569; }
+  /* PROGRESS */
+  .prog-list { display: flex; flex-direction: column; gap: 7px; }
+  .prog-item {}
+  .prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .prog-name { font-size: 9px; color: #94a3b8; }
+  .prog-pct { font-size: 9px; font-weight: 600; color: #e2e8f0; }
+  .prog-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; }
+  /* MOBILE PREVIEW */
+  .mobile-frame {
+    width: 58px; height: 100px; border: 1.5px solid rgba(59,130,246,0.35);
+    border-radius: 10px; background: #0d1524; margin: 0 auto;
+    overflow: hidden; position: relative; flex-shrink: 0;
+  }
+  .mob-screen { padding: 5px; }
+  .mob-row { display: flex; gap: 3px; margin-bottom: 3px; }
+  .mob-card {
+    flex: 1; border-radius: 4px; padding: 3px 4px;
+    background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);
+  }
+  .mob-label { font-size: 5px; color: #60a5fa; }
+  .mob-val { font-size: 8px; font-weight: 700; color: #f1f5f9; }
+  .mob-bar { height: 2px; background: rgba(255,255,255,0.07); border-radius: 1px; margin-top: 2px; overflow: hidden; }
+  .mob-fill { height: 100%; border-radius: 1px; background: #3b82f6; }
+  .mob-notch {
+    width: 18px; height: 3px; background: rgba(59,130,246,0.4);
+    border-radius: 2px; margin: 3px auto;
+  }
+  /* HOLOGRAPHIC PANELS */
+  .holo-container { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .holo-panel {
+    position: absolute;
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 8px; background: rgba(8,16,36,0.7);
+    backdrop-filter: blur(8px);
+    padding: 7px 9px; font-size: 8px; color: #60a5fa;
+    box-shadow: 0 0 20px rgba(59,130,246,0.1), inset 0 0 20px rgba(59,130,246,0.04);
+  }
+  .holo-panel.orange {
+    border-color: rgba(249,115,22,0.25); color: #fb923c;
+    box-shadow: 0 0 20px rgba(249,115,22,0.08), inset 0 0 20px rgba(249,115,22,0.03);
+  }
+  .holo-title { font-size: 7px; font-weight: 600; letter-spacing: 0.5px; opacity: 0.7; margin-bottom: 3px; text-transform: uppercase; }
+  .holo-val { font-size: 14px; font-weight: 700; }
+  .holo-sub { font-size: 7px; opacity: 0.6; }
+  .glow-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(59,130,246,0.12);
+    pointer-events: none;
+  }
+  /* OFFICE DESK ELEMENTS */
+  .desk-strip {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 18px;
+    background: rgba(15,25,45,0.95);
+    border-top: 1px solid rgba(59,130,246,0.15);
+    display: flex; align-items: center; padding: 0 14px; gap: 12px; z-index: 3;
+  }
+  .desk-item { display: flex; align-items: center; gap: 4px; }
+  .desk-led { width: 5px; height: 5px; border-radius: 50%; }
+  .desk-led.on { background: #22c55e; box-shadow: 0 0 5px #22c55e; }
+  .desk-led.orange { background: #f97316; box-shadow: 0 0 5px #f97316; }
+  .desk-text { font-size: 7px; color: #475569; }
+  .sys-time { margin-left: auto; font-size: 8px; color: #334155; font-weight: 500; }
+</style>
+
+<div class="erp-root">
+  <div class="scene-bg"></div>
+
+  <!-- Ambient grid lines -->
+  <div class="holo-container">
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+
+    <!-- Glow rings -->
+    <div class="glow-ring" style="width:200px;height:200px;top:-60px;right:80px;"></div>
+    <div class="glow-ring" style="width:120px;height:120px;top:20px;right:140px;border-color:rgba(249,115,22,0.1);"></div>
+
+    <!-- Holographic floating panels -->
+    <div class="holo-panel" style="top:28px;left:54px;width:78px;">
+      <div class="holo-title">Live sync</div>
+      <div class="holo-val">●&nbsp;ON</div>
+      <div class="holo-sub">All modules active</div>
+    </div>
+
+    <div class="holo-panel orange" style="top:28px;right:4px;width:82px;">
+      <div class="holo-title">Alerts</div>
+      <div class="holo-val">3</div>
+      <div class="holo-sub">Pending actions</div>
+    </div>
+
+    <div class="holo-panel" style="bottom:22px;left:54px;width:90px;">
+      <div class="holo-title">Session</div>
+      <div class="holo-val">Admin</div>
+      <div class="holo-sub">Secured · AES-256</div>
+    </div>
+
+    <div class="holo-panel orange" style="bottom:22px;right:4px;width:86px;">
+      <div class="holo-title">Uptime</div>
+      <div class="holo-val">99.98%</div>
+      <div class="holo-sub">Last 30 days</div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-logo">E</div>
+      <div class="nav-item active" title="Dashboard">⊞</div>
+      <div class="nav-item" title="Students" style="position:relative;">
+        <span>◉</span><div class="nav-dot"></div>
+      </div>
+      <div class="nav-item" title="Attendance">✓</div>
+      <div class="nav-item" title="Fees">₹</div>
+      <div class="nav-item" title="Exams">✎</div>
+      <div class="nav-item" title="Staff">♟</div>
+      <div class="nav-item" title="Transport">⬡</div>
+      <div class="nav-item" title="Reports">▦</div>
+      <div class="nav-item" title="Analytics" style="margin-top:auto;">◈</div>
+      <div class="nav-item" title="Settings">⚙</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content" style="padding-bottom:18px;">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <span style="font-size:9px;color:#475569;font-weight:500;">NEXUS</span>
+        <span style="color:rgba(59,130,246,0.5);font-size:10px;">›</span>
+        <span class="topbar-title">School ERP · Dashboard</span>
+        <span class="topbar-badge">LIVE</span>
+        <div class="topbar-right">
+          <span style="font-size:8px;color:#475569;">AY 2025–26</span>
+          <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+          <div class="avatar">AK</div>
+        </div>
+      </div>
+
+      <!-- DASH BODY -->
+      <div class="dash-body">
+
+        <!-- KPI CARDS -->
+        <div class="kpi-row">
+          <div class="kpi-card blue">
+            <div class="kpi-icon blue" style="font-size:11px;">▣</div>
+            <div class="kpi-label">Total Students</div>
+            <div class="kpi-value">3,842</div>
+            <div class="kpi-change up">▲ 4.2% from last term</div>
+          </div>
+          <div class="kpi-card orange">
+            <div class="kpi-icon orange" style="font-size:11px;">₹</div>
+            <div class="kpi-label">Fee Collected</div>
+            <div class="kpi-value">₹48.6L</div>
+            <div class="kpi-change up">▲ 11.3% this month</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-icon green" style="font-size:11px;">✓</div>
+            <div class="kpi-label">Avg Attendance</div>
+            <div class="kpi-value">91.4%</div>
+            <div class="kpi-change up">▲ 2.1% vs target</div>
+          </div>
+          <div class="kpi-card purple">
+            <div class="kpi-icon purple" style="font-size:11px;">♟</div>
+            <div class="kpi-label">Staff Active</div>
+            <div class="kpi-value">247</div>
+            <div class="kpi-change dn">▼ 3 on leave today</div>
+          </div>
+        </div>
+
+        <!-- MIDDLE ROW -->
+        <div class="mid-row" style="min-height:160px;">
+
+          <!-- Attendance Chart -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <span class="panel-title">Monthly Attendance Overview</span>
+              <span class="panel-tag">Week 3 · Jan</span>
+            </div>
+            <div class="panel-body">
+              <div style="display:flex;gap:10px;margin-bottom:5px;align-items:center;">
+                <div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;border-radius:2px;background:#3b82f6;"></div><span style="font-size:7px;color:#64748b;">Present</span></div>
+                <div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;border-radius:2px;background:rgba(249,115,22,0.7);"></div><span style="font-size:7px;color:#64748b;">Absent</span></div>
+                <span style="margin-left:auto;font-size:8px;color:#f97316;font-weight:600;">91.4% avg</span>
+              </div>
+              <div class="chart-bars">
+                <div class="bar-group"><div class="bar b1" style="height:82%;"></div><div class="bar b2" style="height:18%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:89%;"></div><div class="bar b2" style="height:11%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:75%;"></div><div class="bar b2" style="height:25%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:93%;"></div><div class="bar b2" style="height:7%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:87%;"></div><div class="bar b2" style="height:13%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:91%;"></div><div class="bar b2" style="height:9%;"></div></div>
+                <div class="bar-group"><div class="bar b1" style="height:70%;"></div><div class="bar b2" style="height:30%;"></div></div>
+              </div>
+              <div class="chart-xlabels">
+                <div class="chart-xlabel">Mon</div>
+                <div class="chart-xlabel">Tue</div>
+                <div class="chart-xlabel">Wed</div>
+                <div class="chart-xlabel">Thu</div>
+                <div class="chart-xlabel">Fri</div>
+                <div class="chart-xlabel">Sat</div>
+                <div class="chart-xlabel">Sun</div>
+              </div>
+              <!-- Fee Table -->
+              <div style="margin-top:8px;border-top:1px solid rgba(59,130,246,0.1);padding-top:6px;">
+                <div style="font-size:8px;color:#475569;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px;">Recent Fee Transactions</div>
+                <table class="mini-table">
+                  <thead><tr><th>Student</th><th>Class</th><th>Amount</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td style="color:#cbd5e1;">Riya Mehta</td><td>X-A</td><td style="color:#f97316;">₹12,500</td><td><span class="status-pill paid">Paid</span></td></tr>
+                    <tr><td style="color:#cbd5e1;">Arjun Das</td><td>IX-B</td><td style="color:#f97316;">₹12,500</td><td><span class="status-pill pend">Pending</span></td></tr>
+                    <tr><td style="color:#cbd5e1;">Sara Khan</td><td>XI-S</td><td style="color:#f97316;">₹15,000</td><td><span class="status-pill paid">Paid</span></td></tr>
+                    <tr><td style="color:#cbd5e1;">Dev Nair</td><td>VII-C</td><td style="color:#f97316;">₹9,000</td><td><span class="status-pill due">Overdue</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module Distribution Donut -->
+          <div class="panel" style="display:flex;flex-direction:column;">
+            <div class="panel-hdr">
+              <span class="panel-title">Module Usage</span>
+              <span class="panel-tag">Today</span>
+            </div>
+            <div class="panel-body" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+              <div class="donut-wrap">
+                <svg width="72" height="72" viewBox="0 0 72 72" style="flex-shrink:0;">
+                  <circle cx="36" cy="36" r="26" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+                  <circle cx="36" cy="36" r="26" fill="none" stroke="#3b82f6" stroke-width="10" stroke-dasharray="62 101" stroke-dashoffset="0" stroke-linecap="butt" transform="rotate(-90 36 36)"/>
+                  <circle cx="36" cy="36" r="26" fill="none" stroke="#f97316" stroke-width="10" stroke-dasharray="24 139" stroke-dashoffset="-62" stroke-linecap="butt" transform="rotate(-90 36 36)"/>
+                  <circle cx="36" cy="36" r="26" fill="none" stroke="#a855f7" stroke-width="10" stroke-dasharray="15 148" stroke-dashoffset="-86" stroke-linecap="butt" transform="rotate(-90 36 36)"/>
+                  <text x="36" y="38" text-anchor="middle" fill="#f1f5f9" font-size="10" font-weight="700" font-family="Inter,sans-serif">ERP</text>
+                </svg>
+                <div class="donut-labels">
+                  <div class="donut-label-item"><div class="donut-dot" style="background:#3b82f6;"></div><span class="donut-ltext">Attendance</span><span class="donut-lval">38%</span></div>
+                  <div class="donut-label-item"><div class="donut-dot" style="background:#f97316;"></div><span class="donut-ltext">Fees</span><span class="donut-lval">24%</span></div>
+                  <div class="donut-label-item"><div class="donut-dot" style="background:#a855f7;"></div><span class="donut-ltext">Exams</span><span class="donut-lval">15%</span></div>
+                  <div class="donut-label-item"><div class="donut-dot" style="background:#22c55e;"></div><span class="donut-ltext">Other</span><span class="donut-lval">23%</span></div>
+                </div>
+              </div>
+              <div style="margin-top:10px;border-top:1px solid rgba(59,130,246,0.1);padding-top:7px;">
+                <div style="font-size:8px;color:#475569;font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px;">Exam Results — Class X</div>
+                <div class="prog-list">
+                  <div class="prog-item">
+                    <div class="prog-meta"><span class="prog-name">Mathematics</span><span class="prog-pct" style="color:#3b82f6;">84%</span></div>
+                    <div class="prog-bar"><div class="prog-fill" style="width:84%;background:#3b82f6;"></div></div>
+                  </div>
+                  <div class="prog-item">
+                    <div class="prog-meta"><span class="prog-name">Science</span><span class="prog-pct" style="color:#22c55e;">79%</span></div>
+                    <div class="prog-bar"><div class="prog-fill" style="width:79%;background:#22c55e;"></div></div>
+                  </div>
+                  <div class="prog-item">
+                    <div class="prog-meta"><span class="prog-name">English</span><span class="prog-pct" style="color:#a855f7;">91%</span></div>
+                    <div class="prog-bar"><div class="prog-fill" style="width:91%;background:#a855f7;"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile ERP + Staff -->
+          <div class="panel" style="display:flex;flex-direction:column;">
+            <div class="panel-hdr">
+              <span class="panel-title">Mobile App · Staff</span>
+              <span class="panel-tag" style="background:rgba(34,197,94,0.1);color:#4ade80;border-color:rgba(34,197,94,0.2);">Online</span>
+            </div>
+            <div class="panel-body" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;">
+              <div class="mobile-frame">
+                <div class="mob-notch"></div>
+                <div class="mob-screen">
+                  <div style="font-size:5px;color:#60a5fa;text-align:center;margin-bottom:3px;font-weight:600;">NEXUS MOBILE</div>
+                  <div class="mob-row">
+                    <div class="mob-card"><div class="mob-label">Students</div><div class="mob-val">3.8K</div></div>
+                    <div class="mob-card" style="background:rgba(249,115,22,0.15);border-color:rgba(249,115,22,0.25);"><div class="mob-label" style="color:#fb923c;">Fees</div><div class="mob-val">48L</div></div>
+                  </div>
+                  <div style="margin:3px 0;"><div class="mob-bar"><div class="mob-fill" style="width:91%;"></div></div><div style="font-size:5px;color:#475569;margin-top:1px;">91% att.</div></div>
+                  <div style="display:flex;flex-direction:column;gap:2px;margin-top:3px;">
+                    <div style="height:5px;background:rgba(59,130,246,0.1);border-radius:1px;display:flex;align-items:center;padding:0 3px;"><span style="font-size:4px;color:#60a5fa;">◉ Live Sync Active</span></div>
+                    <div style="height:5px;background:rgba(34,197,94,0.1);border-radius:1px;display:flex;align-items:center;padding:0 3px;"><span style="font-size:4px;color:#4ade80;">✓ 3 Alerts Cleared</span></div>
+                  </div>
+                </div>
+              </div>
+              <div style="font-size:7px;color:#475569;text-align:center;">iOS &amp; Android · Real-time sync</div>
+              <div style="width:100%;border-top:1px solid rgba(59,130,246,0.1);padding-top:6px;">
+                <div style="font-size:8px;color:#475569;font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px;">Transport Status</div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:8px;color:#94a3b8;">⬡ Route 1 · Sector 4</span>
+                    <span style="font-size:7px;padding:1px 5px;border-radius:8px;background:rgba(34,197,94,0.12);color:#4ade80;">En Route</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:8px;color:#94a3b8;">⬡ Route 2 · Sector 12</span>
+                    <span style="font-size:7px;padding:1px 5px;border-radius:8px;background:rgba(59,130,246,0.12);color:#60a5fa;">Arrived</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:8px;color:#94a3b8;">⬡ Route 3 · Sector 8</span>
+                    <span style="font-size:7px;padding:1px 5px;border-radius:8px;background:rgba(249,115,22,0.12);color:#fb923c;">Delayed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM ROW -->
+        <div class="bot-row">
+
+          <!-- Notifications -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <span class="panel-title">Notifications</span>
+              <span class="panel-tag" style="background:rgba(249,115,22,0.12);color:#fb923c;border-color:rgba(249,115,22,0.2);">3 New</span>
+            </div>
+            <div class="panel-body">
+              <div class="notif-list">
+                <div class="notif-item">
+                  <div class="notif-ico warn">⚠</div>
+                  <div style="flex:1;">
+                    <div class="notif-text"><b>Fee reminder</b> sent to 42 students with overdue payments for Jan 2026.</div>
+                    <div class="notif-time">2 min ago</div>
+                  </div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-ico info">ℹ</div>
+                  <div style="flex:1;">
+                    <div class="notif-text"><b>Exam schedule</b> for Class XII Board Prep uploaded. 18 subjects listed.</div>
+                    <div class="notif-time">15 min ago</div>
+                  </div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-ico ok">✓</div>
+                  <div style="flex:1;">
+                    <div class="notif-text"><b>Backup complete.</b> Monthly data archived to secure cloud storage.</div>
+                    <div class="notif-time">1 hr ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Today -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <span class="panel-title">Staff on Duty Today</span>
+              <span class="panel-tag">247 / 250</span>
+            </div>
+            <div class="panel-body">
+              <table class="mini-table" style="width:100%;">
+                <thead><tr><th>Name</th><th>Dept</th><th>Time In</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#cbd5e1;">P. Sharma</td><td>Maths</td><td>08:12</td><td><span class="status-pill paid">Present</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">R. Verma</td><td>Science</td><td>08:22</td><td><span class="status-pill paid">Present</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">A. Sinha</td><td>Hindi</td><td>—</td><td><span class="status-pill due">Absent</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">M. Gupta</td><td>Admin</td><td>07:58</td><td><span class="status-pill paid">Present</span></td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:7px;border-top:1px solid rgba(59,130,246,0.1);padding-top:5px;">
+                <div class="prog-meta"><span style="font-size:8px;color:#64748b;">Dept coverage</span><span style="font-size:8px;color:#22c55e;font-weight:600;">98.8%</span></div>
+                <div class="prog-bar" style="margin-top:3px;"><div class="prog-fill" style="width:98.8%;background:linear-gradient(90deg,#22c55e,#16a34a);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Sparklines -->
+          <div class="panel">
+            <div class="panel-hdr">
+              <span class="panel-title">Analytics · Trends</span>
+              <span class="panel-tag">Q3 2025</span>
+            </div>
+            <div class="panel-body">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="font-size:8px;color:#64748b;">Revenue vs Target</span>
+                    <span style="font-size:8px;font-weight:600;color:#f97316;">₹48.6L / ₹52L</span>
+                  </div>
+                  <svg width="100%" height="28" viewBox="0 0 200 28">
+                    <polyline fill="none" stroke="rgba(59,130,246,0.25)" stroke-width="1" points="0,20 28,16 56,18 84,12 112,14 140,9 168,11 200,7"/>
+                    <polyline fill="none" stroke="#3b82f6" stroke-width="1.5" points="0,22 28,18 56,20 84,13 112,15 140,10 168,12 200,8"/>
+                    <circle cx="200" cy="8" r="3" fill="#3b82f6"/>
+                  </svg>
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="font-size:8px;color:#64748b;">Student Enrollment</span>
+                    <span style="font-size:8px;font-weight:600;color:#a855f7;">+4.2% YoY</span>
+                  </div>
+                  <svg width="100%" height="28" viewBox="0 0 200 28">
+                    <polyline fill="none" stroke="#a855f7" stroke-width="1.5" points="0,24 28,22 56,20 84,19 112,16 140,14 168,12 200,10"/>
+                    <circle cx="200" cy="10" r="3" fill="#a855f7"/>
+                  </svg>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px;">
+                  <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.15);border-radius:6px;padding:5px 7px;">
+                    <div style="font-size:7px;color:#475569;">Reports Generated</div>
+                    <div style="font-size:13px;font-weight:700;color:#60a5fa;">1,248</div>
+                    <div style="font-size:7px;color:#22c55e;">▲ this month</div>
+                  </div>
+                  <div style="background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.15);border-radius:6px;padding:5px 7px;">
+                    <div style="font-size:7px;color:#475569;">Pending Actions</div>
+                    <div style="font-size:13px;font-weight:700;color:#fb923c;">14</div>
+                    <div style="font-size:7px;color:#f97316;">Needs review</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESK STRIP -->
+  <div class="desk-strip">
+    <div class="desk-item"><div class="desk-led on"></div><span class="desk-text">System Online</span></div>
+    <div class="desk-item"><div class="desk-led orange"></div><span class="desk-text">3 Alerts</span></div>
+    <div class="desk-item"><div class="desk-led on" style="background:#3b82f6;box-shadow:0 0 5px #3b82f6;"></div><span class="desk-text">Cloud Sync Active</span></div>
+    <div class="desk-item"><span class="desk-text">Nexus ERP v4.2.1 · Enterprise</span></div>
+    <div class="sys-time" id="sys-time">00:00:00</div>
+  </div>
+</div>
+
+<script>
+  function tick() {
+    const el = document.getElementById('sys-time');
+    if (el) el.textContent = new Date().toLocaleTimeString('en-IN', {hour12: false});
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>

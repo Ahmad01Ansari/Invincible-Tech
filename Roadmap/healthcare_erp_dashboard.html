@@ -1,0 +1,438 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.hc-root{font-family:'Inter',system-ui,sans-serif;background:#07090f;color:#e2e8f0;border-radius:12px;overflow:hidden;position:relative;min-height:640px;}
+.hc-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 25% 15%,rgba(14,76,160,0.32) 0%,transparent 55%),radial-gradient(ellipse at 78% 72%,rgba(14,100,80,0.18) 0%,transparent 50%),radial-gradient(ellipse at 55% 40%,rgba(6,12,26,1) 35%,#040608 100%);pointer-events:none;}
+.hc-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.035) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;}
+.holo-wrap{position:absolute;inset:0;pointer-events:none;z-index:1;}
+.holo{position:absolute;border:1px solid rgba(59,130,246,0.22);border-radius:8px;background:rgba(6,14,32,0.82);padding:7px 10px;}
+.holo.teal{border-color:rgba(20,184,166,0.25);}
+.holo.amber{border-color:rgba(249,115,22,0.22);}
+.hl{font-size:7px;font-weight:600;letter-spacing:.5px;color:rgba(148,163,184,.55);text-transform:uppercase;margin-bottom:2px;}
+.hv{font-size:14px;font-weight:700;}
+.hs{font-size:7px;color:rgba(148,163,184,.5);margin-top:1px;}
+.hc-layout{position:relative;z-index:2;display:flex;height:640px;}
+.sidebar{width:50px;background:rgba(6,10,20,.93);border-right:1px solid rgba(59,130,246,.13);display:flex;flex-direction:column;align-items:center;padding:11px 0;gap:3px;}
+.s-logo{width:30px;height:30px;border-radius:8px;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
+.s-logo span{font-size:10px;}
+.ni{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(148,163,184,.6);cursor:pointer;position:relative;}
+.ni.act{background:rgba(59,130,246,.18);color:#60a5fa;}
+.ni:hover{background:rgba(255,255,255,.05);}
+.ndot{position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:#f97316;}
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:42px;background:rgba(6,10,20,.9);border-bottom:1px solid rgba(59,130,246,.11);display:flex;align-items:center;padding:0 12px;gap:8px;}
+.tb-title{font-size:11px;font-weight:600;color:#f1f5f9;letter-spacing:.4px;}
+.tb-badge{font-size:8px;padding:2px 7px;border-radius:20px;background:rgba(20,184,166,.18);color:#2dd4bf;border:1px solid rgba(20,184,166,.28);}
+.tb-badge.warn{background:rgba(239,68,68,.14);color:#f87171;border-color:rgba(239,68,68,.22);}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:7px;}
+.tb-btn{width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:10px;color:#94a3b8;position:relative;cursor:pointer;}
+.av{width:24px;height:24px;border-radius:50%;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#fff;}
+.body{flex:1;overflow:auto;padding:9px;display:flex;flex-direction:column;gap:7px;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.kc{background:rgba(12,20,38,.88);border:1px solid rgba(59,130,246,.15);border-radius:8px;padding:8px 10px;position:relative;overflow:hidden;}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kc.blue::before{background:#3b82f6;}.kc.teal::before{background:#14b8a6;}.kc.green::before{background:#22c55e;}.kc.amber::before{background:#f97316;}.kc.red::before{background:#ef4444;}
+.ki{font-size:9px;margin-bottom:5px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.ki.blue{background:rgba(59,130,246,.13);}.ki.teal{background:rgba(20,184,166,.13);}.ki.green{background:rgba(34,197,94,.13);}.ki.amber{background:rgba(249,115,22,.13);}.ki.red{background:rgba(239,68,68,.13);}
+.kl{font-size:8px;color:#64748b;font-weight:500;letter-spacing:.4px;text-transform:uppercase;}
+.kv{font-size:16px;font-weight:700;color:#f1f5f9;line-height:1.15;}
+.kch{font-size:8px;margin-top:2px;display:flex;align-items:center;gap:2px;}
+.kch.up{color:#22c55e;}.kch.dn{color:#ef4444;}.kch.warn{color:#f97316;}
+.mid-row{display:grid;grid-template-columns:1.7fr 1fr 1fr;gap:7px;min-height:0;}
+.panel{background:rgba(12,20,38,.88);border:1px solid rgba(59,130,246,.13);border-radius:8px;overflow:hidden;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-bottom:1px solid rgba(59,130,246,.09);}
+.pt{font-size:9px;font-weight:600;color:#cbd5e1;letter-spacing:.3px;}
+.ptag{font-size:7px;padding:1px 6px;border-radius:10px;background:rgba(59,130,246,.11);color:#60a5fa;border:1px solid rgba(59,130,246,.18);}
+.ptag.teal{background:rgba(20,184,166,.11);color:#2dd4bf;border-color:rgba(20,184,166,.2);}
+.ptag.ok{background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.18);}
+.ptag.warn{background:rgba(249,115,22,.1);color:#fb923c;border-color:rgba(249,115,22,.18);}
+.pb{padding:8px 10px;}
+.mtbl{width:100%;border-collapse:collapse;font-size:8px;table-layout:fixed;}
+.mtbl th{text-align:left;color:#475569;font-weight:500;padding:3px 5px;border-bottom:1px solid rgba(59,130,246,.09);font-size:7px;text-transform:uppercase;letter-spacing:.4px;}
+.mtbl td{padding:4px 5px;color:#94a3b8;border-bottom:1px solid rgba(255,255,255,.025);}
+.mtbl tr:last-child td{border-bottom:none;}
+.pill{display:inline-block;padding:1px 5px;border-radius:10px;font-size:7px;font-weight:600;}
+.pill.ok{background:rgba(34,197,94,.14);color:#4ade80;}
+.pill.warn{background:rgba(249,115,22,.14);color:#fb923c;}
+.pill.err{background:rgba(239,68,68,.14);color:#f87171;}
+.pill.info{background:rgba(59,130,246,.14);color:#60a5fa;}
+.pill.teal{background:rgba(20,184,166,.14);color:#2dd4bf;}
+.pill.pur{background:rgba(168,85,247,.14);color:#c084fc;}
+.bars{display:flex;align-items:flex-end;gap:4px;height:70px;padding-bottom:3px;}
+.bg{flex:1;display:flex;gap:2px;align-items:flex-end;}
+.b{flex:1;border-radius:2px 2px 0 0;}
+.b.bl{background:#3b82f6;}.b.bt{background:rgba(20,184,166,.75);}
+.xl{font-size:6px;color:#334155;text-align:center;margin-top:2px;}
+.prog-row{display:flex;flex-direction:column;gap:6px;}
+.pr-item{}
+.pr-meta{display:flex;justify-content:space-between;margin-bottom:2px;}
+.pr-name{font-size:8px;color:#94a3b8;}
+.pr-pct{font-size:8px;font-weight:600;color:#e2e8f0;}
+.pr-bar{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.pr-fill{height:100%;border-radius:2px;}
+.notif-list{display:flex;flex-direction:column;gap:4px;}
+.ni-card{display:flex;gap:6px;padding:5px 6px;border-radius:6px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04);}
+.ni-ico{width:19px;height:19px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;}
+.ni-ico.warn{background:rgba(249,115,22,.18);}.ni-ico.info{background:rgba(59,130,246,.18);}.ni-ico.ok{background:rgba(34,197,94,.18);}.ni-ico.err{background:rgba(239,68,68,.18);}
+.ni-txt{font-size:8px;color:#94a3b8;line-height:1.4;}
+.ni-txt b{color:#cbd5e1;font-weight:500;}
+.ni-time{font-size:7px;color:#334155;margin-top:1px;}
+.bot-row{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:7px;}
+.vitals-row{display:flex;gap:5px;flex-wrap:wrap;}
+.v-chip{flex:1;min-width:50px;border-radius:6px;padding:5px 7px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);}
+.v-l{font-size:7px;color:#475569;font-weight:500;}
+.v-v{font-size:12px;font-weight:700;color:#f1f5f9;}
+.v-u{font-size:6px;color:#475569;}
+.tab-frame{width:54px;height:76px;border:1.5px solid rgba(59,130,246,.3);border-radius:7px;background:#090f1e;overflow:hidden;flex-shrink:0;}
+.tab-s{padding:4px;}
+.tab-hd{font-size:4px;color:#60a5fa;text-align:center;font-weight:600;margin-bottom:2px;}
+.t-row{display:flex;gap:2px;margin-bottom:2px;}
+.t-mc{flex:1;border-radius:3px;padding:2px 3px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);}
+.t-ml{font-size:4px;color:#60a5fa;}
+.t-mv{font-size:7px;font-weight:700;color:#f1f5f9;}
+.t-bar{height:2px;background:rgba(255,255,255,.06);border-radius:1px;margin-top:1px;overflow:hidden;}
+.t-bf{height:100%;border-radius:1px;}
+.desk-strip{background:rgba(6,10,20,.97);border-top:1px solid rgba(59,130,246,.12);height:16px;display:flex;align-items:center;padding:0 12px;gap:10px;}
+.dl{width:5px;height:5px;border-radius:50%;}
+.dl.g{background:#22c55e;}.dl.b{background:#3b82f6;}.dl.o{background:#f97316;}
+.dt{font-size:6px;color:#334155;}
+.st{margin-left:auto;font-size:7px;color:#1e293b;font-weight:500;}
+.ecg-wrap{position:relative;overflow:hidden;}
+</style>
+
+<div class="hc-root">
+<div class="hc-bg"></div>
+<div class="hc-grid"></div>
+
+<div class="holo-wrap">
+  <div class="holo" style="top:30px;left:52px;width:76px;">
+    <div class="hl">HIPAA</div>
+    <div class="hv" style="color:#2dd4bf;font-size:11px;">SECURED</div>
+    <div class="hs">End-to-end encrypted</div>
+  </div>
+  <div class="holo amber" style="top:30px;right:3px;width:80px;">
+    <div class="hl">Critical</div>
+    <div class="hv" style="color:#fb923c;">2 Alerts</div>
+    <div class="hs">ICU · OT pending</div>
+  </div>
+  <div class="holo teal" style="bottom:20px;left:52px;width:84px;">
+    <div class="hl">AI Diagnostics</div>
+    <div class="hv" style="color:#60a5fa;font-size:11px;">ONLINE</div>
+    <div class="hs">Model v3.1 · Active</div>
+  </div>
+  <div class="holo" style="bottom:20px;right:3px;width:80px;">
+    <div class="hl">Uptime</div>
+    <div class="hv" style="color:#4ade80;">99.97%</div>
+    <div class="hs">SLA · 30-day avg</div>
+  </div>
+</div>
+
+<div class="hc-layout">
+  <div class="sidebar">
+    <div class="s-logo"><span>HC</span></div>
+    <div class="ni act">+</div>
+    <div class="ni" style="position:relative;">&#9711;<div class="ndot"></div></div>
+    <div class="ni">&#9745;</div>
+    <div class="ni">&#9684;</div>
+    <div class="ni">&#9883;</div>
+    <div class="ni">&#9874;</div>
+    <div class="ni">&#9873;</div>
+    <div class="ni">&#9632;</div>
+    <div class="ni">&#8853;</div>
+    <div class="ni" style="margin-top:auto;">&#9874;</div>
+    <div class="ni">&#9881;</div>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <span style="font-size:8px;color:#334155;font-weight:500;">MEDI</span>
+      <span style="color:rgba(59,130,246,.4);font-size:9px;">›</span>
+      <span class="tb-title">Healthcare ERP · Command Center</span>
+      <span class="tb-badge">LIVE</span>
+      <span class="tb-badge warn">2 CRITICAL</span>
+      <div class="tb-r">
+        <span style="font-size:7px;color:#334155;">Dr. Ahmad · Admin</span>
+        <div class="tb-btn">&#9993;<div style="position:absolute;top:4px;right:4px;width:4px;height:4px;border-radius:50%;background:#f97316;"></div></div>
+        <div class="av">AK</div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <div class="kpi-row">
+        <div class="kc blue">
+          <div class="ki blue" style="font-size:10px;">&#9651;</div>
+          <div class="kl">Patients Today</div>
+          <div class="kv">284</div>
+          <div class="kch up">&#9650; 8.4% vs yesterday</div>
+        </div>
+        <div class="kc teal">
+          <div class="ki teal" style="font-size:10px;">&#9673;</div>
+          <div class="kl">Appointments</div>
+          <div class="kv">142</div>
+          <div class="kch up">&#9650; 12 pending</div>
+        </div>
+        <div class="kc green">
+          <div class="ki green" style="font-size:10px;">&#8853;</div>
+          <div class="kl">Billing Today</div>
+          <div class="kv">&#8377;6.2L</div>
+          <div class="kch up">&#9650; 14.1% vs avg</div>
+        </div>
+        <div class="kc amber">
+          <div class="ki amber" style="font-size:10px;">&#9883;</div>
+          <div class="kl">Pharmacy Rx</div>
+          <div class="kv">318</div>
+          <div class="kch warn">&#9650; 6 out of stock</div>
+        </div>
+        <div class="kc red">
+          <div class="ki red" style="font-size:10px;">&#9679;</div>
+          <div class="kl">ICU Beds</div>
+          <div class="kv">4 / 18</div>
+          <div class="kch dn">&#9660; 78% occupied</div>
+        </div>
+      </div>
+
+      <div class="mid-row" style="min-height:190px;">
+
+        <div class="panel">
+          <div class="ph">
+            <span class="pt">Patient Inflow &amp; OPD Overview</span>
+            <span class="ptag">Week · Jan 2026</span>
+          </div>
+          <div class="pb">
+            <div style="display:flex;gap:8px;margin-bottom:5px;align-items:center;">
+              <div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;border-radius:2px;background:#3b82f6;"></div><span style="font-size:7px;color:#64748b;">OPD</span></div>
+              <div style="display:flex;align-items:center;gap:3px;"><div style="width:8px;height:8px;border-radius:2px;background:rgba(20,184,166,.75);"></div><span style="font-size:7px;color:#64748b;">IPD</span></div>
+              <span style="margin-left:auto;font-size:8px;color:#f97316;font-weight:600;">Avg 284/day</span>
+            </div>
+            <div class="bars">
+              <div class="bg"><div class="b bl" style="height:78%;"></div><div class="b bt" style="height:35%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:88%;"></div><div class="b bt" style="height:42%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:65%;"></div><div class="b bt" style="height:28%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:95%;"></div><div class="b bt" style="height:50%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:82%;"></div><div class="b bt" style="height:38%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:72%;"></div><div class="b bt" style="height:30%;"></div></div>
+              <div class="bg"><div class="b bl" style="height:60%;"></div><div class="b bt" style="height:22%;"></div></div>
+            </div>
+            <div style="display:flex;gap:4px;">
+              <div class="xl" style="flex:1;">Mon</div><div class="xl" style="flex:1;">Tue</div><div class="xl" style="flex:1;">Wed</div><div class="xl" style="flex:1;">Thu</div><div class="xl" style="flex:1;">Fri</div><div class="xl" style="flex:1;">Sat</div><div class="xl" style="flex:1;">Sun</div>
+            </div>
+
+            <div style="margin-top:8px;border-top:1px solid rgba(59,130,246,.09);padding-top:6px;">
+              <div style="font-size:7px;color:#475569;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Patient Queue · OPD</div>
+              <table class="mtbl">
+                <thead><tr><th style="width:30%">Patient</th><th style="width:20%">Dept</th><th style="width:22%">Doctor</th><th style="width:14%">Token</th><th style="width:14%">Status</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#cbd5e1;">R. Sharma</td><td>Cardio</td><td>Dr. Patel</td><td style="color:#60a5fa;">T-041</td><td><span class="pill info">In OPD</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">A. Mehta</td><td>Ortho</td><td>Dr. Rao</td><td style="color:#60a5fa;">T-042</td><td><span class="pill warn">Waiting</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">S. Verma</td><td>Neuro</td><td>Dr. Sinha</td><td style="color:#60a5fa;">T-043</td><td><span class="pill ok">Consulting</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">P. Khan</td><td>Peds</td><td>Dr. Gupta</td><td style="color:#60a5fa;">T-044</td><td><span class="pill err">Critical</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="display:flex;flex-direction:column;">
+          <div class="ph">
+            <span class="pt">Doctor Schedules</span>
+            <span class="ptag teal">Today</span>
+          </div>
+          <div class="pb" style="flex:1;display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:5px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.12);">
+                <div><div style="font-size:8px;color:#93c5fd;font-weight:500;">Dr. S. Patel</div><div style="font-size:7px;color:#475569;">Cardiology · OPD 1</div></div>
+                <span class="pill ok">On Duty</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:5px;background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.12);">
+                <div><div style="font-size:8px;color:#5eead4;font-weight:500;">Dr. R. Rao</div><div style="font-size:7px;color:#475569;">Orthopaedics · OPD 3</div></div>
+                <span class="pill teal">Surgery</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:5px;background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.12);">
+                <div><div style="font-size:8px;color:#c084fc;font-weight:500;">Dr. M. Sinha</div><div style="font-size:7px;color:#475569;">Neurology · OPD 5</div></div>
+                <span class="pill pur">Research</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:5px;background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.12);">
+                <div><div style="font-size:8px;color:#fb923c;font-weight:500;">Dr. A. Gupta</div><div style="font-size:7px;color:#475569;">Paediatrics · Ward B</div></div>
+                <span class="pill warn">Break</span>
+              </div>
+            </div>
+            <div style="border-top:1px solid rgba(59,130,246,.09);padding-top:6px;">
+              <div style="font-size:7px;color:#475569;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Lab Reports Pending</div>
+              <div class="prog-row">
+                <div class="pr-item">
+                  <div class="pr-meta"><span class="pr-name">Haematology</span><span class="pr-pct" style="color:#3b82f6;">24</span></div>
+                  <div class="pr-bar"><div class="pr-fill" style="width:72%;background:#3b82f6;"></div></div>
+                </div>
+                <div class="pr-item">
+                  <div class="pr-meta"><span class="pr-name">Biochemistry</span><span class="pr-pct" style="color:#14b8a6;">18</span></div>
+                  <div class="pr-bar"><div class="pr-fill" style="width:54%;background:#14b8a6;"></div></div>
+                </div>
+                <div class="pr-item">
+                  <div class="pr-meta"><span class="pr-name">Radiology</span><span class="pr-pct" style="color:#f97316;">9</span></div>
+                  <div class="pr-bar"><div class="pr-fill" style="width:27%;background:#f97316;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="display:flex;flex-direction:column;">
+          <div class="ph">
+            <span class="pt">Mobile App · Tablet</span>
+            <span class="ptag ok">Connected</span>
+          </div>
+          <div class="pb" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div class="tab-frame">
+              <div style="width:12px;height:2px;background:rgba(59,130,246,.35);border-radius:1px;margin:2px auto;"></div>
+              <div class="tab-s">
+                <div class="tab-hd">MEDICORE MOBILE</div>
+                <div class="t-row">
+                  <div class="t-mc"><div class="t-ml">Patients</div><div class="t-mv">284</div></div>
+                  <div class="t-mc" style="background:rgba(20,184,166,.12);border-color:rgba(20,184,166,.2);"><div class="t-ml" style="color:#2dd4bf;">Appts</div><div class="t-mv">142</div></div>
+                </div>
+                <div style="margin:2px 0;"><div class="t-bar"><div class="t-bf" style="width:78%;background:#3b82f6;"></div></div><div style="font-size:4px;color:#475569;margin-top:1px;">78% bed occupancy</div></div>
+                <div style="display:flex;flex-direction:column;gap:1px;margin-top:2px;">
+                  <div style="height:4px;background:rgba(59,130,246,.1);border-radius:1px;display:flex;align-items:center;padding:0 2px;"><span style="font-size:3.5px;color:#60a5fa;">&#9679; Sync Active</span></div>
+                  <div style="height:4px;background:rgba(239,68,68,.1);border-radius:1px;display:flex;align-items:center;padding:0 2px;"><span style="font-size:3.5px;color:#f87171;">! 2 Critical Flags</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:7px;color:#475569;text-align:center;">iOS &amp; Android · Biometric secured</div>
+
+            <div style="width:100%;border-top:1px solid rgba(59,130,246,.09);padding-top:5px;">
+              <div style="font-size:7px;color:#475569;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Insurance Claims</div>
+              <table class="mtbl" style="table-layout:fixed;">
+                <thead><tr><th style="width:38%">Patient</th><th style="width:32%">Insurer</th><th style="width:30%">Status</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:#cbd5e1;">R. Sharma</td><td>Star Health</td><td><span class="pill ok">Approved</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">T. Nair</td><td>HDFC ERGO</td><td><span class="pill warn">Pending</span></td></tr>
+                  <tr><td style="color:#cbd5e1;">M. Das</td><td>Niva Bupa</td><td><span class="pill err">Rejected</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bot-row">
+
+        <div class="panel">
+          <div class="ph">
+            <span class="pt">Notifications &amp; Alerts</span>
+            <span class="ptag warn">4 Active</span>
+          </div>
+          <div class="pb">
+            <div class="notif-list">
+              <div class="ni-card">
+                <div class="ni-ico err">!</div>
+                <div style="flex:1;"><div class="ni-txt"><b>ICU Alert:</b> Pt. P. Khan — SpO2 dropped to 88%. Immediate review required.</div><div class="ni-time">2 min ago</div></div>
+              </div>
+              <div class="ni-card">
+                <div class="ni-ico warn">&#9868;</div>
+                <div style="flex:1;"><div class="ni-txt"><b>Pharmacy:</b> Metoprolol 50mg stock critical — 12 units remaining. Reorder triggered.</div><div class="ni-time">11 min ago</div></div>
+              </div>
+              <div class="ni-card">
+                <div class="ni-ico info">&#9993;</div>
+                <div style="flex:1;"><div class="ni-txt"><b>Lab Ready:</b> CBC &amp; LFT reports for 18 patients uploaded to medical records.</div><div class="ni-time">28 min ago</div></div>
+              </div>
+              <div class="ni-card">
+                <div class="ni-ico ok">&#10003;</div>
+                <div style="flex:1;"><div class="ni-txt"><b>Billing:</b> &#8377;6.2L collected today. 4 insurance claims auto-submitted to TPA.</div><div class="ni-time">1 hr ago</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ph">
+            <span class="pt">Patient Vitals Monitor</span>
+            <span class="ptag teal">Real-time</span>
+          </div>
+          <div class="pb">
+            <div style="font-size:8px;color:#334155;margin-bottom:5px;">ICU Bed 3 · P. Khan (M, 58)</div>
+            <div class="vitals-row" style="margin-bottom:7px;">
+              <div class="v-chip"><div class="v-l">Heart Rate</div><div class="v-v" style="color:#ef4444;">96</div><div class="v-u">bpm</div></div>
+              <div class="v-chip"><div class="v-l">SpO2</div><div class="v-v" style="color:#f97316;">88%</div><div class="v-u">&#9660; low</div></div>
+              <div class="v-chip"><div class="v-l">BP</div><div class="v-v" style="color:#3b82f6;">138/90</div><div class="v-u">mmHg</div></div>
+              <div class="v-chip"><div class="v-l">Temp</div><div class="v-v" style="color:#14b8a6;">38.2</div><div class="v-u">°C</div></div>
+            </div>
+            <div style="border-top:1px solid rgba(59,130,246,.09);padding-top:5px;">
+              <div style="font-size:7px;color:#475569;font-weight:600;margin-bottom:3px;letter-spacing:.4px;text-transform:uppercase;">ECG Trace</div>
+              <svg width="100%" height="30" viewBox="0 0 200 30">
+                <polyline fill="none" stroke="rgba(34,197,94,.25)" stroke-width=".8" points="0,15 20,15 30,15 35,4 40,26 45,15 65,15 70,15 75,4 80,26 85,15 105,15 110,4 115,26 120,15 140,15 145,4 150,26 155,15 175,15 180,4 185,26 190,15 200,15"/>
+                <polyline fill="none" stroke="#22c55e" stroke-width="1" points="0,15 20,15 30,15 35,4 40,26 45,15 65,15 70,15 75,4 80,26 85,15 105,15 110,4 115,26 120,15 140,15 145,4 150,26 155,15 175,15 180,4 185,26 190,15 200,15"/>
+                <circle cx="200" cy="15" r="2" fill="#22c55e"/>
+              </svg>
+            </div>
+            <div style="margin-top:6px;border-top:1px solid rgba(59,130,246,.09);padding-top:5px;">
+              <div style="font-size:7px;color:#475569;font-weight:600;margin-bottom:4px;letter-spacing:.4px;text-transform:uppercase;">Pharmacy Rx Today</div>
+              <div class="prog-row">
+                <div class="pr-item"><div class="pr-meta"><span class="pr-name">Antibiotics</span><span class="pr-pct" style="color:#3b82f6;">94</span></div><div class="pr-bar"><div class="pr-fill" style="width:84%;background:#3b82f6;"></div></div></div>
+                <div class="pr-item"><div class="pr-meta"><span class="pr-name">Cardiac</span><span class="pr-pct" style="color:#ef4444;">72</span></div><div class="pr-bar"><div class="pr-fill" style="width:65%;background:#ef4444;"></div></div></div>
+                <div class="pr-item"><div class="pr-meta"><span class="pr-name">Analgesics</span><span class="pr-pct" style="color:#f97316;">152</span></div><div class="pr-bar"><div class="pr-fill" style="width:100%;background:#f97316;"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ph">
+            <span class="pt">Analytics &amp; Reports</span>
+            <span class="ptag">Q4 2025</span>
+          </div>
+          <div class="pb">
+            <div style="display:flex;flex-direction:column;gap:7px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:8px;color:#64748b;">Revenue vs Target</span><span style="font-size:8px;font-weight:600;color:#f97316;">&#8377;6.2L / &#8377;7L</span></div>
+                <svg width="100%" height="24" viewBox="0 0 200 24">
+                  <polyline fill="none" stroke="rgba(59,130,246,.2)" stroke-width=".8" points="0,18 28,14 56,16 84,10 112,12 140,7 168,9 200,5"/>
+                  <polyline fill="none" stroke="#3b82f6" stroke-width="1.5" points="0,20 28,16 56,18 84,11 112,13 140,8 168,10 200,6"/>
+                  <circle cx="200" cy="6" r="2.5" fill="#3b82f6"/>
+                </svg>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:8px;color:#64748b;">Bed Occupancy Trend</span><span style="font-size:8px;font-weight:600;color:#ef4444;">78% · High</span></div>
+                <svg width="100%" height="24" viewBox="0 0 200 24">
+                  <polyline fill="none" stroke="#ef4444" stroke-width="1.5" points="0,20 28,18 56,14 84,16 112,10 140,8 168,11 200,6"/>
+                  <circle cx="200" cy="6" r="2.5" fill="#ef4444"/>
+                </svg>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:2px;">
+                <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.14);border-radius:6px;padding:5px 7px;">
+                  <div style="font-size:7px;color:#475569;">Records Digitised</div>
+                  <div style="font-size:13px;font-weight:700;color:#60a5fa;">12,480</div>
+                  <div style="font-size:7px;color:#22c55e;">&#9650; 99.2% complete</div>
+                </div>
+                <div style="background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.14);border-radius:6px;padding:5px 7px;">
+                  <div style="font-size:7px;color:#475569;">Staff Active</div>
+                  <div style="font-size:13px;font-weight:700;color:#2dd4bf;">412</div>
+                  <div style="font-size:7px;color:#f97316;">8 on emergency</div>
+                </div>
+              </div>
+              <div style="background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.13);border-radius:6px;padding:5px 8px;display:flex;justify-content:space-between;align-items:center;">
+                <div><div style="font-size:7px;color:#475569;">NABH Compliance Score</div><div style="font-size:13px;font-weight:700;color:#c084fc;">96.4%</div></div>
+                <div style="font-size:7px;padding:2px 7px;border-radius:10px;background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.2);">Accredited</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="desk-strip">
+  <div class="dl g"></div><span class="dt">System Online</span>
+  <div class="dl o"></div><span class="dt">2 Critical Alerts</span>
+  <div class="dl b"></div><span class="dt">HL7 FHIR Sync Active</span>
+  <span class="dt">MediCore ERP v5.1.0 · Enterprise Healthcare</span>
+  <span class="st" id="hctime">--:--:--</span>
+</div>
+</div>
+
+<script>
+function tick(){var e=document.getElementById('hctime');if(e)e.textContent=new Date().toLocaleTimeString('en-IN',{hour12:false});}
+tick();setInterval(tick,1000);
+</script>
